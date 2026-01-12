@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import PropertyDetail from '@/components/PropertyDetail';
 import FilterBar, { FilterState } from '@/components/FilterBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,10 @@ const mockProperties = [
     distance: 0.5,
     image: 'https://cdn.poehali.dev/projects/5af5de01-93d0-4c21-accd-4e3331a80316/files/1c07a356-cac4-42fb-921d-b3bb5afa560a.jpg',
     amenities: ['Wi-Fi', 'Камин', 'Терраса', 'Барбекю'],
+    maxGuests: 4,
+    bedrooms: 2,
+    bathrooms: 1,
+    description: 'Уютный деревянный домик в сосновом бору. Идеально подходит для спокойного отдыха на природе. Рядом лес, чистый воздух и тишина.',
   },
   {
     id: 2,
@@ -30,6 +35,10 @@ const mockProperties = [
     distance: 1,
     image: 'https://cdn.poehali.dev/projects/5af5de01-93d0-4c21-accd-4e3331a80316/files/f0dd0a55-5774-41a2-a5bd-ca6cf0bc9a9e.jpg',
     amenities: ['Wi-Fi', 'Сауна', 'Парковка', 'Кухня'],
+    maxGuests: 6,
+    bedrooms: 3,
+    bathrooms: 2,
+    description: 'Современный коттедж с панорамными окнами и видом на лес. Оборудован всем необходимым для комфортного отдыха большой компании.',
   },
   {
     id: 3,
@@ -100,6 +109,7 @@ const blogPosts = [
 export default function Index() {
   const [currentPage, setCurrentPage] = useState('home');
   const [filteredProperties, setFilteredProperties] = useState(mockProperties);
+  const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
 
   const handleFilterChange = (filters: FilterState) => {
     const filtered = mockProperties.filter((property) => {
@@ -118,6 +128,18 @@ export default function Index() {
   };
 
   const renderPage = () => {
+    if (currentPage === 'detail' && selectedProperty !== null) {
+      const property = mockProperties.find(p => p.id === selectedProperty);
+      if (property) {
+        return (
+          <PropertyDetail 
+            property={property} 
+            onBack={() => setCurrentPage('catalog')}
+          />
+        );
+      }
+    }
+
     switch (currentPage) {
       case 'home':
         return (
@@ -146,7 +168,14 @@ export default function Index() {
               <h2 className="text-3xl font-bold text-center mb-12">Популярные предложения</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {mockProperties.slice(0, 3).map((property) => (
-                  <PropertyCard key={property.id} {...property} />
+                  <PropertyCard 
+                    key={property.id} 
+                    {...property} 
+                    onClick={() => {
+                      setSelectedProperty(property.id);
+                      setCurrentPage('detail');
+                    }}
+                  />
                 ))}
               </div>
               <div className="text-center mt-12">
@@ -200,7 +229,14 @@ export default function Index() {
             <FilterBar onFilterChange={handleFilterChange} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProperties.map((property) => (
-                <PropertyCard key={property.id} {...property} />
+                <PropertyCard 
+                  key={property.id} 
+                  {...property} 
+                  onClick={() => {
+                    setSelectedProperty(property.id);
+                    setCurrentPage('detail');
+                  }}
+                />
               ))}
             </div>
             {filteredProperties.length === 0 && (

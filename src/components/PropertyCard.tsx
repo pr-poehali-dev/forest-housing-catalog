@@ -11,6 +11,7 @@ interface PropertyCardProps {
   distance: number;
   image: string;
   amenities: string[];
+  onClick?: () => void;
 }
 
 export default function PropertyCard({
@@ -21,9 +22,13 @@ export default function PropertyCard({
   distance,
   image,
   amenities,
+  onClick,
 }: PropertyCardProps) {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <Card 
+      className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+      onClick={onClick}
+    >
       <div className="relative h-48 overflow-hidden">
         <img
           src={image}
